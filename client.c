@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
         die("connect");
 
     printf("[CLIENTE] Conectado em %s:%d\n", server_ip, port);
-    printf("[CLIENTE] Digite mensagens e pressione ENTER. Ctrl+D para sair.\n");
+    printf("[CLIENTE] Digite contas como [OPERAÇÃO OP1 OP2] e pressione ENTER. As operações podem ser soma (ADD), subtração (SUB), multiplicação (MUL), e divisão (DIV). Ctrl+D para sair.\n");
 
     fd_set rset;
     char sendbuf[BUF_SIZE];
