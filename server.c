@@ -33,20 +33,6 @@ static void die(const char *msg) {
     exit(EXIT_FAILURE);
 }
 
-// função para enviar para todos os clientes conectados uma mensagem (exceto client_fd, que é quem enviou a mensagem)
-static void broadcast(int *clients, int max_i, int sender_fd, const char *msg, size_t len) {
-    for(int i = 0; i <= max_i; i++) {
-        int fd = clients[i];
-        if (fd >= 0 && fd != sender_fd) {
-            // sockfd (descritor do socket destino), buf (ponteiro dos dados), tamanho da msg, flags
-            ssize_t n = send(fd, msg, len, 0);
-            if (fd < 0) { //se o client cai ou desconecta durante o processamento do broadcast
-                perror("send");
-            }
-        }
-    }
-}
-
 int main(int argc, char **argv) {
 
     if (argc != 2) {
@@ -174,12 +160,11 @@ int main(int argc, char **argv) {
                     clients[i] = -1;
                 } else {
                     buf[n] = '\0'; // garantir string
-                    // Simples broadcast
                    char operator[8];
                    double x, y, res;
                    char response[BUF_SIZE];
 
-                   if (sscanf(buf,"%s %lf %lf",operator,&x,&y) == 3){
+                   if (sscanf(buf,"%s %lf %lf\n",operator,&x,&y) == 3){
                     if (strcmp(operator, "ADD") == 0){
                         res = x + y;
                         snprintf(response, sizeof(response), "OK %.2f\n", res);
