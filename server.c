@@ -144,6 +144,7 @@ int main(int argc, char **argv) {
         // Verifica dados vindos dos clientes existentes
         for (int i = 0; i <= max_i; i++) {
             int fd = clients[i];
+            char response[BUF_SIZE];
             if (fd < 0) continue;
             if (FD_ISSET(fd, &rset)) {
                 ssize_t n = recv(fd, buf, sizeof(buf) - 1, 0);
@@ -162,7 +163,16 @@ int main(int argc, char **argv) {
                     buf[n] = '\0'; // garantir string
                    char operator[8];
                    double x, y, res;
-                   char response[BUF_SIZE];
+
+                   if (strncmp(buf, "QUIT", 4) == 0){
+                    printf("Cliente fd=%d pediu para sair.\n", fd);
+                    const char *ciao = "Calculadora encerrada.\n" ;
+                    send(fd, ciao, strlen(ciao), 0);
+                    close(fd);
+                    FD_CLR(fd,&allset);
+                    clients[i] = -1;
+                    continue;
+                   }
 
                    if (sscanf(buf,"%s %lf %lf\n",operator,&x,&y) == 3){
                     if (strcmp(operator, "ADD") == 0){
@@ -183,9 +193,9 @@ int main(int argc, char **argv) {
                             res = x / y;
                             snprintf(response, sizeof(response), "OK %.2f\n", res);
                         }
-                    } else snprintf(response, sizeof(response), "ERR operador_invalido\n");
+                    } else snprintf(response, sizeof(response), "ERR EINV operador_invalido\n");
                         
-                   } else snprintf(response, sizeof(response), "ERR sintaxe_invalida\n");
+                   } else snprintf(response, sizeof(response), "ERR EINV sintaxe_invalida\n");
                    send(fd, response, strlen(response), 0);
 
                 }
