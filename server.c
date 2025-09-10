@@ -23,14 +23,24 @@
 #include <sys/socket.h> //socket
 #include <netinet/in.h> //struct para htons, sockaddr_in
 #include <arpa/inet.h>  //inet
+#include <signal.h>
 
 // definir o número máx. de clients controlado pelo select
 #define MAX_CLIENTS     FD_SETSIZE
 #define BUF_SIZE        1024
 
+int listen_fd;
+
 static void die(const char *msg) {
     perror(msg);
     exit(EXIT_FAILURE);
+}
+
+void tratar_sigint(int sinal){
+    (void) sinal;
+    printf("Calculadora encerrada com CTRL + C");
+    close(listen_fd);
+    exit(0);
 }
 
 int main(int argc, char **argv) {
@@ -46,7 +56,7 @@ int main(int argc, char **argv) {
     }
 
     // criação do socket
-    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (listen_fd < 0) die("socket");
 
     int yes = 1; // para habilitar o reuso da porta após o fechamento do servidor
@@ -70,7 +80,7 @@ int main(int argc, char **argv) {
     // listen
     if (listen(listen_fd, 8) < 0) //número máximo de conns pendentes
         die("listen");
-    
+    signal(SIGINT, tratar_sigint);
     printf("\nServidor conectado e ouvindo em 0.0.0.0: %d ...\n", port);
 
     // vetor de clientes para guards os FDs
@@ -177,21 +187,21 @@ int main(int argc, char **argv) {
                    if (sscanf(buf,"%s %lf %lf\n",operator,&x,&y) == 3){
                     if (strcmp(operator, "ADD") == 0){
                         res = x + y;
-                        snprintf(response, sizeof(response), "OK %.2f\n", res);
+                        snprintf(response, sizeof(response), "OK %.6f\n", res);
                     }
                     else if (strcmp(operator, "SUB") == 0){
                         res = x - y;
-                        snprintf(response, sizeof(response), "OK %.2f\n", res);
+                        snprintf(response, sizeof(response), "OK %.6f\n", res);
                     }
                     else if (strcmp(operator, "MUL") == 0){
                         res = x * y;
-                        snprintf(response, sizeof(response), "OK %.2f\n", res);
+                        snprintf(response, sizeof(response), "OK %.6f\n", res);
                     }
                     else if (strcmp(operator, "DIV") == 0){
                         if (y == 0) snprintf(response, sizeof(response), "ERR EZDV divisao_por_zero\n");
                         else{
                             res = x / y;
-                            snprintf(response, sizeof(response), "OK %.2f\n", res);
+                            snprintf(response, sizeof(response), "OK %.6f\n", res);
                         }
                     } else snprintf(response, sizeof(response), "ERR EINV operador_invalido\n");
                         
