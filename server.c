@@ -11,6 +11,7 @@
      4) loop: select(...) -> accept para novos clientes, recv() para mensagens
 
      Bruno Antico Galin 10417318
+     Gustavo Fugulin Soares da Silva 10418552 
 */ 
 
 
