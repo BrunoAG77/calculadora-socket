@@ -1,6 +1,7 @@
 # Calculadora TCP (Cliente/Servidor)
 
 Bruno Antico Galin 10417318
+Gustavo Fugulin Soares da Silva 10418552
 
 Projeto de uma calculadora distribuída, permitindo que um cliente enviar operações matemáticas para o servidor executar e devolver o resultado.
 ---
