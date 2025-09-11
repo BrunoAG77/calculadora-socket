@@ -6,6 +6,7 @@
 // Compilar: gcc -Wall -Wextra -O2 -o chat_client chat_client.c
 // Executar: ./chat_client 127.0.0.1 5000
 // Bruno Antico Galin 10417318
+// Gustavo Fugulin Soares da Silva 10418552 
 
 #include <stdio.h>      // printf, perror, fgets
 #include <stdlib.h>     // exit, atoi
